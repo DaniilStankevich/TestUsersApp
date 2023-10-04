@@ -1,60 +1,59 @@
-import { useState, useEffect  } from 'react'
-import Card, { CardVariant } from './components/Card'
-import { ITodo, IUser } from './types/types'
-import axios from 'axios'
-import { List } from './components/List'
-import UserItem from './components/UserItem'
-import TodoItem from './components/TodoItem'
-import EventsExample from './components/EventsExample'
+import { useState, useEffect } from "react"
+import { ITodo, IUser } from "./types/types"
+import axios from "axios"
+import { Route, Routes } from "react-router-dom"
+import UserPage from "./components/UserPage"
+import TodosPage from "./components/TodosPage"
+import { NavLink } from "react-router-dom"
+import UserItemPage from "./components/UserItemPage"
+import TodoItemPage from "./components/TodoItemPage"
 
 export const App = () => {
-
-  const [ users, setUsers] = useState<IUser[]>([])
-  const [ todos, setTodos] = useState<ITodo[]>([])
-
-
+  const [users, setUsers] = useState<IUser[]>([])
+  const [todos, setTodos] = useState<ITodo[]>([])
 
   useEffect(() => {
-    fetchuseres() 
     fetchTodos()
   }, [])
 
-  async function fetchuseres() {
-      try {
-          const response = await axios.get<IUser[]>('https://jsonplaceholder.typicode.com/users')
-
-            setUsers(response.data)
-      } catch (e) {
-          alert(e)
-      }
-  }
-
   async function fetchTodos() {
     try {
-        const response = await axios.get<ITodo[]>('https://jsonplaceholder.typicode.com/todos?_limit=10')
+      const response = await axios.get<ITodo[]>(
+        "https://jsonplaceholder.typicode.com/todos?_limit=10"
+      )
 
-        setTodos(response.data)
+      setTodos(response.data)
     } catch (e) {
-        alert(e)
+      alert(e)
     }
-}
- 
-
+  }
 
   return (
     <div>
+      <div>
+        <NavLink to="/users">Пользователи</NavLink>
+        <NavLink to="/todos">Список дел</NavLink>
+      </div>
+      <Routes>
+        <Route
+          path="/users"
+          element={<UserPage />}
+        />
 
-      <EventsExample />
+        <Route
+          path="/todos"
+          element={<TodosPage />}
+        />
 
-      <Card variant={CardVariant.outlined}   width='200px' height='200px'>
-            <button>Кнопка</button>  
-      </Card>
-
-
-      <List items={users}   renderItem={(user:IUser)  => <UserItem  user={user}  key={user.id}/>   } />
-
-      <List items={todos}   renderItem={(todo)  => <TodoItem  todo={todo}  key={todo.id}/>   } />
-
+        <Route
+          path="/users/:id"
+          element={<UserItemPage />}
+        />
+        <Route
+          path="/todos/:id"
+          element={<TodoItemPage />}
+        />
+      </Routes>
     </div>
   )
 }
